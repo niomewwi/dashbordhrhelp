@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intelligent Candidate Selection System | AI-Driven HR Analytics</title>
+    <meta name="description" content="AI-powered HR recruitment dashboard with intelligent candidate selection and analytics">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+    <style>
+        :root {
+            --bg-primary: #0A1128;
+            --bg-secondary: #1a2332;
+            --accent-blue: #00D9FF;
+            --accent-green: #00FFA3;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-primary: #FFFFFF;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --success: #00FFA3;
+            --warning: #FFB800;
+            --error: #FF3366;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            background-image: linear-gradient(135deg, #0A1128 0%, #1a2332 100%);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 700;
+        }
+
+        /* Glassmorphism Effect */
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        .glass-strong {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+        }
+
+        /* Navigation */
+        .nav-glass {
+            background: rgba(10, 17, 40, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        /* Hero Section */
+        .hero-gradient {
+            background: linear-gradient(135deg, #0A1128 0%, #1a2332 50%, #0A1128 100%);
+            background-size: 200% 200%;
+            animation: gradientShift 15s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        /* Floating Particles */
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--accent-blue) 0%, transparent 70%);
+            opacity: 0.3;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(100px, -100px) scale(1.2); }
+            50% { transform: translate(-50px, 100px) scale(0.8); }
+            75% { transform: translate(-100px, -50px) scale(1.1); }
+        }
+
+        /* Card Hover Effects */
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 217, 255, 0.2);
+            border-color: var(--accent-blue);
+        }
+
+        /* Button Styles */
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-green) 100%);
+            padding: 14px 32px;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(0, 217, 255, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            padding: 14px 32px;
+            border-radius: 12px;
+            font-weight: 600;
+            border: 2px solid var(--accent-blue);
+            color: var(--accent-blue);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .btn-secondary:hover {
+            background: var(--accent-blue);
+            color: var(--bg-primary);
+            transform: scale(1.05);
+        }
+
+        /* Scroll Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Table Styles */
+        .table-row {
+            transition: all 0.2s ease;
+        }
+
+        .table-row:hover {
+            background: rgba(0, 217, 255, 0.1);
+            transform: scale(1.01);
+        }
+
+        .score-high { color: var(--success); }
+        .score-medium { color: var(--warning); }
+        .score-low { color: var(--error); }
+
+        /* Music Player */
+        .music-player {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            min-width: 300px;
+            transition: all 0.3s ease;
+        }
+
+        .music-player.minimized {
+            width: 60px;
+            height: 60px;
+            min-width: 60px;
+        }
+
+        /* Chat Messages */
+        .chat-message {
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .typing-indicator {
+            display: inline-flex;
+            gap: 4px;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent-blue);
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-10px); }
+        }
+
+        /* Status Indicator */
+        .status-pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Image Lightbox */
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
+            backdrop-filter: blur(10px);
+        }
+
+        .lightbox.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .music-player {
+                width: 100%;
+                right: 0;
+                bottom: 0;
+                border-radius: 0;
+            }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent-blue);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-green);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="nav-glass fixed top-0 w-full z-50 py-4 px-6">
+        <div class="container mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-400 to-green-400 flex items-center justify-center">
+                    <span class="text-xl font-bold text-gray-900">AI</span>
+                </div>
+                <span class="text-xl font-bold">HR Dashboard</span>
+            </div>
+            <div class="hidden md:flex items-center gap-6">
+                <a href="#hero" class="hover:text-blue-400 transition">Dashboard</a>
+                <a href="#methodology" class="hover:text-blue-400 transition">Criteria</a>
+                <a href="#ai-agent" class="hover:text-blue-400 transition">AI Agent</a>
+                <a href="#analytics" class="hover:text-blue-400 transition">Analytics</a>
+                <a href="#contact" class="hover:text-blue-400 transition">Contact</a>
+            </div>
+            <button class="md:hidden text-white" id="mobileMenuBtn">☰</button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="hero" class="hero-gradient min-h-screen flex items-center justify-center relative overflow-hidden pt-20">
+        <!-- Floating Particles -->
+        <div class="particle" style="width: 200px; height: 200px; top: 10%; left: 10%; animation-delay: 0s;"></div>
+        <div class="particle" style="width: 150px; height: 150px; top: 60%; right: 15%; animation-delay: 5s;"></div>
+        <div class="particle" style="width: 100px; height: 100px; bottom: 20%; left: 20%; animation-delay: 10s;"></div>
+        <div class="particle" style="width: 180px; height: 180px; top: 30%; right: 30%; animation-delay: 15s;"></div>
+
+        <div class="container mx-auto px-6 py-20 relative z-10">
+            <div class="max-w-4xl mx-auto text-center fade-in">
+                <h1 class="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-blue-400 to-green-400 bg-clip-text text-transparent">
+                    AI-Powered Candidate Selection
+                </h1>
+                <p class="text-xl md:text-2xl text-gray-300 mb-8">
+                    Transform your recruitment process with intelligent analytics and automated candidate evaluation
+                </p>
+                <div class="glass rounded-2xl p-8 mb-8">
+                    <p class="text-lg text-gray-300 mb-4">
+                        Experience 87% accuracy improvement and reduce hiring time by 60%
+                    </p>
+                </div>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <button class="btn-primary" onclick="scrollToSection('dashboard')">View Dashboard</button>
+                    <button class="btn-secondary" onclick="scrollToSection('methodology')">Learn More</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Statistics Section -->
+    <section id="dashboard" class="py-20 px-6">
+        <div class="container mx-auto">
+            <h2 class="text-4xl font-bold text-center mb-12 fade-in">Key Performance Metrics</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="glass rounded-2xl p-6 card-hover fade-in">
+                    <div class="text-4xl mb-4">📊</div>
+                    <div class="text-3xl font-bold text-blue-400 mb-2">87%</div>
+                    <p class="text-gray-300">Accuracy Improvement</p>
+                </div>
+                <div class="glass rounded-2xl p-6 card-hover fade-in">
+                    <div class="text-4xl mb-4">⏱️</div>
+                    <div class="text-3xl font-bold text-green-400 mb-2">42 Days</div>
+                    <p class="text-gray-300">Average Hiring Time</p>
+                </div>
+                <div class="glass rounded-2xl p-6 card-hover fade-in">
+                    <div class="text-4xl mb-4">💰</div>
+                    <div class="text-3xl font-bold text-yellow-400 mb-2">$4,700</div>
+                    <p class="text-gray-300">Cost per Hire</p>
+                </div>
+                <div class="glass rounded-2xl p-6 card-hover fade-in">
+                    <div class="text-4xl mb-4">🤖</div>
+                    <div class="text-3xl font-bold text-purple-400 mb-2">73%</div>
+                    <p class="text-gray-300">HR Automation Rate</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Methodology Section -->
+    <section id="methodology" class="py-20 px-6 bg-gradient-to-b from-transparent to-gray-900/20">
+        <div class="container mx-auto">
+            <h2 class="text-4xl font-bold text-center mb-4 fade-in">Evidence-Based Selection Criteria</h2>
+            <p class="text-center text-gray-300 mb-12 max-w-3xl mx-auto fade-in">
+                Our system uses scientifically validated criteria with weighted scoring to ensure fair and accurate candidate evaluation.
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-12">
+                <div class="glass rounded-2xl p-6 card-hover fade-in">
+                    <div class="text-4xl mb-4">💼</div>
+                    <h3 class="text-xl font-bold mb-2">Professional Experience</h3>
+                    <div class="text-3xl font-bold text-blue-400 mb-2">30%</div>
+                    <div class="w-full bg-gray-700 rounded-full h-2">
+                        <div class="bg-blue-400 h-2 rounded-full" style="width: 30%"></div>
+                    </div>
+                </div>
+                <div class="glass rounded-2xl p-6 card-hover fade-in">
+                    <div class="text-4xl mb-4">⚙️</div>
+                    <h3 class="text-xl font-bold mb-2">Technical Skills</h3>
+                    <div class="text-3xl font-bold text-green-400 mb-2">25%</div>
+                    <div class="w-full bg-gray-700 rounded-full h-2">
+                        <div class="bg-green-400 h-2 rounded-full" style="width: 25%"></div>
+                    </div>
+                </div>
+                <div class="glass rounded-2xl p-6 card-hover fade-in">
+                    <div class="text-4xl mb-4">🤝</div>
+                    <h3 class="text-xl font-bold mb-2">Soft Skills</h3>
+                    <div class="text-3xl font-bold text-yellow-400 mb-2">20%</div>
+                    <div class="w-full bg-gray-700 rounded-full h-2">
+                        <div class="bg-yellow-400 h-2 rounded-full" style="width: 20%"></div>
+                    </div>
+                </div>
+                <div class="glass rounded-2xl p-6 card-hover fade-in">
+                    <div class="text-4xl mb-4">🎓</div>
+                    <h3 class="text-xl font-bold mb-2">Education</h3>
+                    <div class="text-3xl font-bold text-purple-400 mb-2">15%</div>
+                    <div class="w-full bg-gray-700 rounded-full h-2">
+                        <div class="bg-purple-400 h-2 rounded-full" style="width: 15%"></div>
+                    </div>
+                </div>
+                <div class="glass rounded-2xl p-6 card-hover fade-in">
+                    <div class="text-4xl mb-4">❤️</div>
+                    <h3 class="text-xl font-bold mb-2">Cultural Fit</h3>
+                    <div class="text-3xl font-bold text-pink-400 mb-2">10%</div>
+                    <div class="w-full bg-gray-700 rounded-full h-2">
+                        <div class="bg-pink-400 h-2 rounded-full" style="width: 10%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Donut Chart -->
+            <div class="glass rounded-2xl p-8 max-w-md mx-auto fade-in">
+                <h3 class="text-2xl font-bold text-center mb-6">Criteria Weight Distribution</h3>
+                <canvas id="criteriaChart"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dynamic Data Table Section -->
+    <section id="data-table" class="py-20 px-6">
+        <div class="container mx-auto">
+            <h2 class="text-4xl font-bold text-center mb-8 fade-in">Interactive Candidate Analytics</h2>
+            <div class="glass rounded-2xl p-6 fade-in">
+                <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                    <input type="text" id="searchInput" placeholder="Search candidates..." 
+                           class="w-full md:w-64 px-4 py-2 rounded-lg bg-gray-800 border border-gray-700 text-white focus:outline-none focus:border-blue-400">
+                    <button class="btn-secondary" onclick="exportData()">Export Data</button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="border-b border-gray-700">
+                                <th class="px-4 py-3 text-left cursor-pointer hover:text-blue-400 transition" onclick="sortTable(0)">Candidate Name ↕</th>
+                                <th class="px-4 py-3 text-left cursor-pointer hover:text-blue-400 transition" onclick="sortTable(1)">Experience ↕</th>
+                                <th class="px-4 py-3 text-left cursor-pointer hover:text-blue-400 transition" onclick="sortTable(2)">Education ↕</th>
+                                <th class="px-4 py-3 text-left cursor-pointer hover:text-blue-400 transition" onclick="sortTable(3)">Hard Skills ↕</th>
+                                <th class="px-4 py-3 text-left cursor-pointer hover:text-blue-400 transition" onclick="sortTable(4)">Soft Skills ↕</th>
+                                <th class="px-4 py-3 text-left cursor-pointer hover:text-blue-400 transition" onclick="sortTable(5)">Cultural Fit ↕</th>
+                                <th class="px-4 py-3 text-left cursor-pointer hover:text-blue-400 transition" onclick="sortTable(6)">Total Score ↕</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <!-- Table rows will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Media Integration Section -->
+    <section id="media" class="py-20 px-6 bg-gradient-to-b from-transparent to-gray-900/20">
+        <div class="container mx-auto">
+            <h2 class="text-4xl font-bold text-center mb-12 fade-in">Media Integration</h2>
+            
+            <!-- AI Avatar Video -->
+            <div class="glass rounded-2xl p-8 mb-12 fade-in">
+                <h3 class="text-2xl font-bold mb-6">Meet Your AI Assistant</h3>
+                <div class="relative rounded-lg overflow-hidden bg-gray-900">
+                    <!-- REPLACE YOUR_VIDEO.mp4 WITH YOUR ACTUAL VIDEO FILE -->
+                    <video id="aiAvatar" controls class="w-full">
+                        <source src="speech.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI Chatbot Section -->
+    <section id="chatbot" class="py-20 px-6">
+        <div class="container mx-auto">
+            <h2 class="text-4xl font-bold text-center mb-4 fade-in">Virtual HR Assistant</h2>
+            <p class="text-center text-gray-300 mb-12 max-w-2xl mx-auto fade-in">
+                Ask questions about selection criteria, calculate candidate scores, get recommendations
+            </p>
+            <div class="glass rounded-2xl p-6 max-w-3xl mx-auto fade-in">
+                <div id="chatMessages" class="h-96 overflow-y-auto mb-4 space-y-4 p-4 bg-gray-900/50 rounded-lg">
+                    <div class="chat-message flex justify-start">
+                        <div class="glass-strong rounded-2xl px-4 py-2 max-w-[80%]">
+                            <p class="text-sm">Hello! I'm your AI HR Assistant. Ask me about candidate evaluation criteria.</p>
+                        </div>
+                    </div>
+                </div>
+                <div id="typingIndicator" class="hidden mb-4">
+                    <div class="flex justify-start">
+                        <div class="glass-strong rounded-2xl px-4 py-2">
+                            <div class="typing-indicator">
+                                <div class="typing-dot"></div>
+                                <div class="typing-dot"></div>
+                                <div class="typing-dot"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    <input type="text" id="chatInput" placeholder="Type your message..." 
+                           class="flex-1 px-4 py-2 rounded-lg bg-gray-800 border border-gray-700 text-white focus:outline-none focus:border-blue-400"
+                           onkeypress="handleChatKeyPress(event)">
+                    <button class="btn-primary" onclick="sendChatMessage()">Send</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI Agent Monitoring Section -->
+    <section id="ai-agent" class="py-20 px-6 bg-gradient-to-b from-transparent to-gray-900/20">
+        <div class="container mx-auto">
+            <h2 class="text-4xl font-bold text-center mb-12 fade-in">AI Agent: Real-Time Data Monitoring</h2>
+            <div class="glass rounded-2xl p-8 fade-in">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="w-4 h-4 bg-green-400 rounded-full status-pulse"></div>
+                    <span class="text-xl font-bold">Active</span>
+                </div>
+                <p class="text-gray-300 mb-8" id="lastUpdate">Last Updated: December 13, 2024, 14:30</p>
+                
+                <div class="space-y-4 mb-8">
+                    <div class="glass-strong rounded-xl p-4 border-l-4 border-blue-400">
+                        <div class="flex items-start gap-3">
+                            <span class="text-2xl">ℹ️</span>
+                            <div>
+                                <h4 class="font-bold mb-2">Market Analysis: Digital skills importance increased by 15% (LinkedIn, Dec 2024)</h4>
+                                <p class="text-gray-300 text-sm">Recommendation: Consider increasing Technical Skills weight from 25% to 30%</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="glass-strong rounded-xl p-4 border-l-4 border-yellow-400">
+                        <div class="flex items-start gap-3">
+                            <span class="text-2xl">⚠️</span>
+                            <div>
+                                <h4 class="font-bold mb-2">Legislative Update: New labor code amendments regarding qualification requirements</h4>
+                                <p class="text-gray-300 text-sm">Recommendation: Review and update education criteria</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <h4 class="font-bold mb-3">Data Sources:</h4>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-3 py-1 glass rounded-full text-sm">LinkedIn Global Trends</span>
+                        <span class="px-3 py-1 glass rounded-full text-sm">SHRM Research</span>
+                        <span class="px-3 py-1 glass rounded-full text-sm">HeadHunter Analytics</span>
+                        <span class="px-3 py-1 glass rounded-full text-sm">Kazakhstan Labor Code</span>
+                    </div>
+                </div>
+
+                <button class="btn-primary" onclick="triggerManualCheck()">Trigger Manual Check</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Visualizations Section -->
+    <section id="analytics" class="py-20 px-6">
+        <div class="container mx-auto">
+            <h2 class="text-4xl font-bold text-center mb-12 fade-in">Analytics & Insights</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <div class="glass rounded-2xl p-6 fade-in">
+                    <h3 class="text-2xl font-bold mb-4">Average Scores by Criteria</h3>
+                    <canvas id="barChart"></canvas>
+                </div>
+                <div class="glass rounded-2xl p-6 fade-in">
+                    <h3 class="text-2xl font-bold mb-4">Hiring Trends (6 Months)</h3>
+                    <canvas id="lineChart"></canvas>
+                </div>
+            </div>
+            <div class="glass rounded-2xl p-6 fade-in">
+                <h3 class="text-2xl font-bold mb-4 text-center">Ideal vs Average Candidate Profile</h3>
+                <canvas id="radarChart"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <!-- Image Gallery Section -->
+    <section id="gallery" class="py-20 px-6 bg-gradient-to-b from-transparent to-gray-900/20">
+        <div class="container mx-auto">
+            <h2 class="text-4xl font-bold text-center mb-12 fade-in">AI-Generated Visual Content</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- REPLACE YOUR_AI_IMAGE_X.jpg WITH YOUR ACTUAL IMAGE FILES -->
+                <div class="glass rounded-2xl overflow-hidden card-hover cursor-pointer" onclick="openLightbox('YOUR_AI_IMAGE_1.jpg')">
+                    <img src="YOUR_AI_IMAGE_1.jpg" alt="HR Process Illustration" class="w-full h-64 object-cover hover:scale-110 transition-transform duration-300">
+                </div>
+                <div class="glass rounded-2xl overflow-hidden card-hover cursor-pointer" onclick="openLightbox('YOUR_AI_IMAGE_2.jpg')">
+                    <img src="YOUR_AI_IMAGE_2.jpg" alt="AI Analytics Dashboard" class="w-full h-64 object-cover hover:scale-110 transition-transform duration-300">
+                </div>
+                <div class="glass rounded-2xl overflow-hidden card-hover cursor-pointer" onclick="openLightbox('YOUR_AI_IMAGE_3.jpg')">
+                    <img src="YOUR_AI_IMAGE_3.jpg" alt="Candidate Evaluation" class="w-full h-64 object-cover hover:scale-110 transition-transform duration-300">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Data Sources Section -->
+    <section id="sources" class="py-20 px-6">
+        <div class="container mx-auto">
+            <h2 class="text-4xl font-bold text-center mb-12 fade-in">Research Foundation</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+                <a href="https://www.shrm.org" target="_blank" class="glass rounded-2xl p-6 card-hover text-center block">
+                    <div class="text-4xl mb-4">📚</div>
+                    <h3 class="font-bold">SHRM</h3>
+                    <p class="text-sm text-gray-400 mt-2">Human Resource Management</p>
+                </a>
+                <a href="https://business.linkedin.com/talent-solutions" target="_blank" class="glass rounded-2xl p-6 card-hover text-center block">
+                    <div class="text-4xl mb-4">💼</div>
+                    <h3 class="font-bold">LinkedIn</h3>
+                    <p class="text-sm text-gray-400 mt-2">Talent Solutions</p>
+                </a>
+                <a href="https://www2.deloitte.com" target="_blank" class="glass rounded-2xl p-6 card-hover text-center block">
+                    <div class="text-4xl mb-4">📊</div>
+                    <h3 class="font-bold">Deloitte</h3>
+                    <p class="text-sm text-gray-400 mt-2">Human Capital Trends</p>
+                </a>
+                <a href="https://www.mckinsey.com" target="_blank" class="glass rounded-2xl p-6 card-hover text-center block">
+                    <div class="text-4xl mb-4">🎯</div>
+                    <h3 class="font-bold">McKinsey</h3>
+                    <p class="text-sm text-gray-400 mt-2">People & Performance</p>
+                </a>
+                <a href="https://hbr.org" target="_blank" class="glass rounded-2xl p-6 card-hover text-center block">
+                    <div class="text-4xl mb-4">📖</div>
+                    <h3 class="font-bold">HBR</h3>
+                    <p class="text-sm text-gray-400 mt-2">Harvard Business Review</p>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact" class="py-12 px-6 border-t border-gray-800">
+        <div class="container mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Project Info</h3>
+                    <p class="text-gray-400 text-sm">Intelligent Candidate Selection System</p>
+                    <p class="text-gray-400 text-sm mt-2">AI-Driven HR Analytics & Recruitment Automation</p>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Quick Links</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#hero" class="text-gray-400 hover:text-blue-400 transition">Dashboard</a></li>
+                        <li><a href="#methodology" class="text-gray-400 hover:text-blue-400 transition">Criteria</a></li>
+                        <li><a href="#ai-agent" class="text-gray-400 hover:text-blue-400 transition">AI Agent</a></li>
+                        <li><a href="#analytics" class="text-gray-400 hover:text-blue-400 transition">Analytics</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Technologies</h3>
+                    <div class="flex flex-wrap gap-2 text-sm">
+                        <span class="px-3 py-1 glass rounded-full">HTML</span>
+                        <span class="px-3 py-1 glass rounded-full">CSS</span>
+                        <span class="px-3 py-1 glass rounded-full">JavaScript</span>
+                        <span class="px-3 py-1 glass rounded-full">Chart.js</span>
+                        <span class="px-3 py-1 glass rounded-full">Claude AI</span>
+                        <span class="px-3 py-1 glass rounded-full">DALL-E</span>
+                        <span class="px-3 py-1 glass rounded-full">Suno AI</span>
+                        <span class="px-3 py-1 glass rounded-full">D-ID</span>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center text-gray-400 text-sm border-t border-gray-800 pt-8">
+                <p>&copy; 2024 Intelligent Candidate Selection System. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Music Player (Fixed Bottom Right) -->
+    <div id="musicPlayer" class="music-player glass rounded-2xl p-4">
+        <div class="flex items-center justify-between mb-2">
+            <h4 class="font-bold">Background Music</h4>
+            <button onclick="toggleMusicPlayer()" class="text-gray-400 hover:text-white">−</button>
+        </div>
+        <div id="musicControls" class="space-y-2">
+            <!-- REPLACE YOUR_MUSIC.mp3 WITH YOUR ACTUAL MUSIC FILE -->
+            <audio id="bgMusic" loop>
+                <source src="background.mp3" type="audio/mpeg">
+            </audio>
+            <div class="flex items-center gap-2">
+                <button onclick="toggleMusic()" id="playPauseBtn" class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center">▶</button>
+                <input type="range" id="volumeSlider" min="0" max="1" step="0.1" value="0.5" onchange="setVolume(this.value)" class="flex-1">
+                <button onclick="toggleMute()" id="muteBtn" class="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center">🔊</button>
+            </div>
+            <div class="w-full bg-gray-700 rounded-full h-2">
+                <div id="progressBar" class="bg-blue-400 h-2 rounded-full" style="width: 0%"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image Lightbox -->
+    <div id="lightbox" class="lightbox" onclick="closeLightbox()">
+        <img id="lightboxImg" src="" alt="" class="max-w-90% max-h-90% object-contain">
+    </div>
+
+    <script>
+        // Sample candidate data
+        const candidates = [
+            { name: "Sarah Johnson", experience: 9, education: 8, hardSkills: 9, softSkills: 8, culturalFit: 9 },
+            { name: "Michael Chen", experience: 7, education: 9, hardSkills: 8, softSkills: 7, culturalFit: 8 },
+            { name: "Emily Rodriguez", experience: 8, education: 7, hardSkills: 7, softSkills: 9, culturalFit: 8 },
+            { name: "David Kim", experience: 6, education: 8, hardSkills: 9, softSkills: 6, culturalFit: 7 },
+            { name: "Lisa Anderson", experience: 9, education: 9, hardSkills: 8, softSkills: 8, culturalFit: 9 }
+        ];
+
+        let sortDirection = {};
+        let filteredCandidates = [...candidates];
+
+        // Calculate total score
+        function calculateScore(candidate) {
+            return (candidate.experience * 0.30 + 
+                    candidate.education * 0.15 + 
+                    candidate.hardSkills * 0.25 + 
+                    candidate.softSkills * 0.20 + 
+                    candidate.culturalFit * 0.10).toFixed(2);
+        }
+
+        // Render table
+        function renderTable() {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+            filteredCandidates.forEach(candidate => {
+                const score = calculateScore(candidate);
+                const row = document.createElement('tr');
+                row.className = 'table-row';
+                row.innerHTML = `
+                    <td class="px-4 py-3">${candidate.name}</td>
+                    <td class="px-4 py-3">${candidate.experience}</td>
+                    <td class="px-4 py-3">${candidate.education}</td>
+                    <td class="px-4 py-3">${candidate.hardSkills}</td>
+                    <td class="px-4 py-3">${candidate.softSkills}</td>
+                    <td class="px-4 py-3">${candidate.culturalFit}</td>
+                    <td class="px-4 py-3 font-bold ${getScoreClass(score)}">${score}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function getScoreClass(score) {
+            const num = parseFloat(score);
+            if (num >= 8) return 'score-high';
+            if (num >= 6) return 'score-medium';
+            return 'score-low';
+        }
+
+        // Table sorting
+        function sortTable(columnIndex) {
+            const columnMap = ['name', 'experience', 'education', 'hardSkills', 'softSkills', 'culturalFit'];
+            const column = columnMap[columnIndex] || 'name';
+            
+            if (!sortDirection[column]) sortDirection[column] = 'asc';
+            
+            filteredCandidates.sort((a, b) => {
+                let aVal = a[column];
+                let bVal = b[column];
+                if (column === 'name') {
+                    aVal = aVal.toLowerCase();
+                    bVal = bVal.toLowerCase();
+                }
+                if (sortDirection[column] === 'asc') {
+                    return aVal > bVal ? 1 : -1;
+                } else {
+                    return aVal < bVal ? 1 : -1;
+                }
+            });
+            
+            sortDirection[column] = sortDirection[column] === 'asc' ? 'desc' : 'asc';
+            renderTable();
+        }
+
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            filteredCandidates = candidates.filter(c => 
+                c.name.toLowerCase().includes(searchTerm)
+            );
+            renderTable();
+        });
+
+        // Export data
+        function exportData() {
+            let csv = 'Candidate Name,Experience,Education,Hard Skills,Soft Skills,Cultural Fit,Total Score\n';
+            filteredCandidates.forEach(c => {
+                csv += `${c.name},${c.experience},${c.education},${c.hardSkills},${c.softSkills},${c.culturalFit},${calculateScore(c)}\n`;
+            });
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'candidates.csv';
+            a.click();
+        }
+
+        // Scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+        // Smooth scroll
+        function scrollToSection(id) {
+            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Charts initialization
+        function initCharts() {
+            // Donut Chart for Criteria
+            const ctxDonut = document.getElementById('criteriaChart');
+            if (ctxDonut) {
+                new Chart(ctxDonut, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Experience', 'Technical Skills', 'Soft Skills', 'Education', 'Cultural Fit'],
+                        datasets: [{
+                            data: [30, 25, 20, 15, 10],
+                            backgroundColor: ['#3B82F6', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { position: 'bottom', labels: { color: '#fff' } }
+                        }
+                    }
+                });
+            }
+
+            // Bar Chart
+            const ctxBar = document.getElementById('barChart');
+            if (ctxBar) {
+                new Chart(ctxBar, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Experience', 'Education', 'Hard Skills', 'Soft Skills', 'Cultural Fit'],
+                        datasets: [{
+                            label: 'Average Score',
+                            data: [7.8, 8.2, 8.0, 7.6, 8.2],
+                            backgroundColor: '#00D9FF'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: { beginAtZero: true, max: 10, ticks: { color: '#fff' }, grid: { color: 'rgba(255,255,255,0.1)' } },
+                            x: { ticks: { color: '#fff' }, grid: { color: 'rgba(255,255,255,0.1)' } }
+                        },
+                        plugins: { legend: { labels: { color: '#fff' } } }
+                    }
+                });
+            }
+
+            // Line Chart
+            const ctxLine = document.getElementById('lineChart');
+            if (ctxLine) {
+                new Chart(ctxLine, {
+                    type: 'line',
+                    data: {
+                        labels: ['Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                        datasets: [{
+                            label: 'Hires',
+                            data: [12, 19, 15, 25, 22, 30],
+                            borderColor: '#00FFA3',
+                            backgroundColor: 'rgba(0, 255, 163, 0.1)',
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: { ticks: { color: '#fff' }, grid: { color: 'rgba(255,255,255,0.1)' } },
+                            x: { ticks: { color: '#fff' }, grid: { color: 'rgba(255,255,255,0.1)' } }
+                        },
+                        plugins: { legend: { labels: { color: '#fff' } } }
+                    }
+                });
+            }
+
+            // Radar Chart
+            const ctxRadar = document.getElementById('radarChart');
+            if (ctxRadar) {
+                new Chart(ctxRadar, {
+                    type: 'radar',
+                    data: {
+                        labels: ['Experience', 'Education', 'Hard Skills', 'Soft Skills', 'Cultural Fit'],
+                        datasets: [{
+                            label: 'Ideal Candidate',
+                            data: [9, 9, 9, 9, 9],
+                            borderColor: '#00FFA3',
+                            backgroundColor: 'rgba(0, 255, 163, 0.2)'
+                        }, {
+                            label: 'Average Candidate',
+                            data: [7.8, 8.2, 8.0, 7.6, 8.2],
+                            borderColor: '#00D9FF',
+                            backgroundColor: 'rgba(0, 217, 255, 0.2)'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            r: { beginAtZero: true, max: 10, ticks: { color: '#fff' }, grid: { color: 'rgba(255,255,255,0.1)' } }
+                        },
+                        plugins: { legend: { labels: { color: '#fff' } } }
+                    }
+                });
+            }
+        }
+
+        // Music Player Functions
+        const bgMusic = document.getElementById('bgMusic');
+        let isPlaying = false;
+        let isMuted = false;
+
+        function toggleMusic() {
+            if (isPlaying) {
+                bgMusic.pause();
+                document.getElementById('playPauseBtn').textContent = '▶';
+                isPlaying = false;
+            } else {
+                bgMusic.play();
+                document.getElementById('playPauseBtn').textContent = '⏸';
+                isPlaying = true;
+            }
+        }
+
+        function setVolume(value) {
+            bgMusic.volume = value;
+        }
+
+        function toggleMute() {
+            isMuted = !isMuted;
+            bgMusic.muted = isMuted;
+            document.getElementById('muteBtn').textContent = isMuted ? '🔇' : '🔊';
+        }
+
+        function toggleMusicPlayer() {
+            const player = document.getElementById('musicPlayer');
+            const controls = document.getElementById('musicControls');
+            player.classList.toggle('minimized');
+            controls.style.display = player.classList.contains('minimized') ? 'none' : 'block';
+        }
+
+        // Music progress bar update
+        if (bgMusic) {
+            bgMusic.addEventListener('timeupdate', () => {
+                const progress = (bgMusic.currentTime / bgMusic.duration) * 100;
+                document.getElementById('progressBar').style.width = progress + '%';
+            });
+        }
+
+        // Chatbot Functions
+        const CLAUDE_API_ENDPOINT = "https://api.anthropic.com/v1/messages";
+        // REPLACE WITH YOUR CLAUDE API KEY (should be on backend in production)
+        const CLAUDE_API_KEY = "YOUR_API_KEY_HERE";
+
+        function addMessageToChat(role, message) {
+            const chatMessages = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `chat-message flex ${role === 'user' ? 'justify-end' : 'justify-start'}`;
+            
+            const bubble = document.createElement('div');
+            if (role === 'user') {
+                bubble.className = 'rounded-2xl px-4 py-2 max-w-[80%] bg-gradient-to-r from-blue-500 to-green-500';
+            } else {
+                bubble.className = 'glass-strong rounded-2xl px-4 py-2 max-w-[80%]';
+            }
+            bubble.textContent = message;
+            messageDiv.appendChild(bubble);
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function showTypingIndicator() {
+            document.getElementById('typingIndicator').classList.remove('hidden');
+        }
+
+        function hideTypingIndicator() {
+            document.getElementById('typingIndicator').classList.add('hidden');
+        }
+
+        async function sendMessageToClaude(userMessage) {
+            addMessageToChat('user', userMessage);
+            showTypingIndicator();
+
+            try {
+                const response = await fetch(CLAUDE_API_ENDPOINT, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "x-api-key": CLAUDE_API_KEY,
+                        "anthropic-version": "2023-06-01"
+                    },
+                    body: JSON.stringify({
+                        model: "claude-sonnet-4-20250514",
+                        max_tokens: 1000,
+                        messages: [{
+                            role: "user",
+                            content: userMessage
+                        }],
+                        system: "You are an AI HR assistant for a candidate selection system. Help with evaluation criteria: Professional Experience (30%), Technical Skills (25%), Soft Skills (20%), Education (15%), Cultural Fit (10%). Calculate scores, explain methodology, answer questions professionally."
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('API request failed');
+                }
+
+                const data = await response.json();
+                const aiResponse = data.content[0].text;
+                hideTypingIndicator();
+                addMessageToChat('ai', aiResponse);
+            } catch (error) {
+                console.error('Error:', error);
+                hideTypingIndicator();
+                addMessageToChat('ai', 'Sorry, I encountered an error. Please check your API key configuration or try again later.');
+            }
+        }
+
+        function sendChatMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            if (message) {
+                sendMessageToClaude(message);
+                input.value = '';
+            }
+        }
+
+        function handleChatKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendChatMessage();
+            }
+        }
+
+        // AI Agent Monitoring
+        function triggerManualCheck() {
+            const btn = event.target;
+            btn.disabled = true;
+            btn.textContent = 'Checking...';
+            
+            setTimeout(() => {
+                const now = new Date();
+                document.getElementById('lastUpdate').textContent = 
+                    `Last Updated: ${now.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}, ${now.toLocaleTimeString()}`;
+                btn.disabled = false;
+                btn.textContent = 'Trigger Manual Check';
+                alert('Manual check completed! Data sources updated.');
+            }, 2000);
+        }
+
+        // Image Lightbox
+        function openLightbox(imageSrc) {
+            document.getElementById('lightboxImg').src = imageSrc;
+            document.getElementById('lightbox').classList.add('active');
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightbox').classList.remove('active');
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            renderTable();
+            initCharts();
+        });
+    </script>
+</body>
+</html>
