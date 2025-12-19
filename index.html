@@ -483,41 +483,6 @@
         </div>
     </section>
 
-    <!-- AI Chatbot Section -->
-    <section id="chatbot" class="py-20 px-6">
-        <div class="container mx-auto">
-            <h2 class="text-4xl font-bold text-center mb-4 fade-in">Virtual HR Assistant</h2>
-            <p class="text-center text-gray-300 mb-12 max-w-2xl mx-auto fade-in">
-                Ask questions about selection criteria, calculate candidate scores, get recommendations
-            </p>
-            <div class="glass rounded-2xl p-6 max-w-3xl mx-auto fade-in">
-                <div id="chatMessages" class="h-96 overflow-y-auto mb-4 space-y-4 p-4 bg-gray-900/50 rounded-lg">
-                    <div class="chat-message flex justify-start">
-                        <div class="glass-strong rounded-2xl px-4 py-2 max-w-[80%]">
-                            <p class="text-sm">Hello! I'm your AI HR Assistant. Ask me about candidate evaluation criteria.</p>
-                        </div>
-                    </div>
-                </div>
-                <div id="typingIndicator" class="hidden mb-4">
-                    <div class="flex justify-start">
-                        <div class="glass-strong rounded-2xl px-4 py-2">
-                            <div class="typing-indicator">
-                                <div class="typing-dot"></div>
-                                <div class="typing-dot"></div>
-                                <div class="typing-dot"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="flex gap-2">
-                    <input type="text" id="chatInput" placeholder="Type your message..." 
-                           class="flex-1 px-4 py-2 rounded-lg bg-gray-800 border border-gray-700 text-white focus:outline-none focus:border-blue-400"
-                           onkeypress="handleChatKeyPress(event)">
-                    <button class="btn-primary" onclick="sendChatMessage()">Send</button>
-                </div>
-            </div>
-        </div>
-    </section>
 
     <!-- AI Agent Monitoring Section -->
     <section id="ai-agent" class="py-20 px-6 bg-gradient-to-b from-transparent to-gray-900/20">
