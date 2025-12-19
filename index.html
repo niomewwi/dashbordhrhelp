@@ -967,10 +967,33 @@
             });
         }
 
-        // Chatbot Functions
-        const CLAUDE_API_ENDPOINT = "https://api.anthropic.com/v1/messages";
-        // REPLACE WITH YOUR CLAUDE API KEY (should be on backend in production)
-        const CLAUDE_API_KEY = "YOUR_API_KEY_HERE";
+       <!-- Поле для ввода вопроса -->
+<input id="msg" placeholder="Ваш вопрос">
+<button onclick="askHR()">Отправить</button>
+
+<!-- Блок для ответа -->
+<div id="answer"></div>
+
+<script>
+async function askHR() {
+  // Берём текст из поля
+  const message = document.getElementById("msg").value;
+
+  // Отправляем запрос на Worker
+  const res = await fetch("https://dashbordhrhelp.sasalunskaa-4b0.workers.dev", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ message })
+  });
+
+  // Получаем ответ
+  const data = await res.json();
+
+  // Показываем его на странице
+  document.getElementById("answer").innerText = data.reply;
+}
+</script>
+
 
         function addMessageToChat(role, message) {
             const chatMessages = document.getElementById('chatMessages');
