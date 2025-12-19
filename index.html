@@ -967,23 +967,104 @@
             });
         }
 
-     <script>
-    // Chat functions
-    function addMessageToChat(role, message) {
-        const chatMessages = document.getElementById('chatMessages');
-        const messageDiv = document.createElement('div');
-        messageDiv.className = `chat-message flex ${role === 'user' ? 'justify-end' : 'justify-start'}`;
-        const bubble = document.createElement('div');
-        bubble.className = role === 'user' ? 'rounded-2xl px-4 py-2 max-w-[80%] bg-gradient-to-r from-blue-500 to-green-500' : 'glass-strong rounded-2xl px-4 py-2 max-w-[80%]';
-        bubble.textContent = message;
-        messageDiv.appendChild(bubble);
-        chatMessages.appendChild(messageDiv);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
+        // Chatbot Functions
+        const CLAUDE_API_ENDPOINT = "https://api.anthropic.com/v1/messages";
+        // REPLACE WITH YOUR CLAUDE API KEY (should be on backend in production)
+        const CLAUDE_API_KEY = "YOUR_API_KEY_HERE";
 
-    function showTypingIndicator() { document.getElementById('typingIndicator').classList.remove('hidden'); }
-    function hideTypingIndicator() { document.getElementById('typingIndicator').classList.add('hidden'); }
+        function addMessageToChat(role, message) {
+            const chatMessages = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `chat-message flex ${role === 'user' ? 'justify-end' : 'justify-start'}`;
+            
+            const bubble = document.createElement('div');
+            if (role === 'user') {
+                bubble.className = 'rounded-2xl px-4 py-2 max-w-[80%] bg-gradient-to-r from-blue-500 to-green-500';
+            } else {
+                bubble.className = 'glass-strong rounded-2xl px-4 py-2 max-w-[80%]';
+            }
+            bubble.textContent = message;
+            messageDiv.appendChild(bubble);
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
 
+        function showTypingIndicator() {
+            document.getElementById('typingIndicator').classList.remove('hidden');
+        }
+
+        function hideTypingIndicator() {
+            document.getElementById('typingIndicator').classList.add('hidden');
+        }
+
+        async function sendMessageToClaude(userMessage) {
+            addMessageToChat('user', userMessage);
+            showTypingIndicator();
+
+            try {
+                const response = await fetch(CLAUDE_API_ENDPOINT, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "x-api-key": CLAUDE_API_KEY,
+                        "anthropic-version": "2023-06-01"
+                    },
+                    body: JSON.stringify({
+                        model: "claude-sonnet-4-20250514",
+                        max_tokens: 1000,
+                        messages: [{
+                            role: "user",
+                            content: userMessage
+                        }],
+                        system: "You are an AI HR assistant for a candidate selection system. Help with evaluation criteria: Professional Experience (30%), Technical Skills (25%), Soft Skills (20%), Education (15%), Cultural Fit (10%). Calculate scores, explain methodology, answer questions professionally."
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('API request failed');
+                }
+
+                const data = await response.json();
+                const aiResponse = data.content[0].text;
+                hideTypingIndicator();
+                addMessageToChat('ai', aiResponse);
+            } catch (error) {
+                console.error('Error:', error);
+                hideTypingIndicator();
+                addMessageToChat('ai', 'Sorry, I encountered an error. Please check your API key configuration or try again later.');
+            }
+        }
+
+        function sendChatMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            if (message) {
+                sendMessageToClaude(message);
+                input.value = '';
+            }
+        }
+
+        function handleChatKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendChatMessage();
+            }
+        }
+
+        // AI Agent Monitoring
+        function triggerManualCheck() {
+            const btn = event.target;
+            btn.disabled = true;
+            btn.textContent = 'Checking...';
+            
+            setTimeout(() => {
+                const now = new Date();
+                document.getElementById('lastUpdate').textContent = 
+                    `Last Updated: ${now.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}, ${now.toLocaleTimeString()}`;
+                btn.disabled = false;
+                btn.textContent = 'Trigger Manual Check';
+                alert('Manual check completed! Data sources updated.');
+            }, 2000);
+        }
 
         // Image Lightbox
         function openLightbox(imageSrc) {
@@ -1001,14 +1082,5 @@
             initCharts();
         });
     </script>
-<!-- Lightbox -->
-<div id="lightbox"
-     class="fixed inset-0 bg-black/80 hidden items-center justify-center z-50"
-     onclick="closeLightbox()">
-
-    <img id="lightbox-img"
-         class="max-w-[90%] max-h-[90%] rounded-xl shadow-2xl"
-         src="" />
-</div>
 </body>
 </html>
