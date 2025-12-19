@@ -471,12 +471,11 @@
   <source src="materials/speech.mp4" type="video/mp4">
 </video>
 
-<button onclick="
-  const v = document.getElementById('bgVideo');
-  v.muted = false;
-  v.volume = 0.5;
-">
-  Включить звук
+<button
+    id="videoSoundBtn"
+    class="mt-4 px-4 py-2 rounded-lg bg-blue-500 hover:bg-blue-600 transition"
+    onclick="toggleVideoSound()">
+    🔊 Включить звук
 </button>
                 </div>
             </div>
@@ -1043,8 +1042,19 @@
         function closeLightbox() {
             document.getElementById('lightbox').classList.remove('active');
         }
+function toggleVideoSound() {
+    const video = document.getElementById('bgVideo');
+    const btn = document.getElementById('videoSoundBtn');
 
-        // Initialize on page load
+    if (video.muted) {
+        video.muted = false;
+        video.volume = 0.5;
+        btn.textContent = '🔇 Выключить звук';
+    } else {
+        video.muted = true;
+        btn.textContent = '🔊 Включить звук';
+    }
+}        // Initialize on page load
         document.addEventListener('DOMContentLoaded', () => {
             renderTable();
             initCharts();
